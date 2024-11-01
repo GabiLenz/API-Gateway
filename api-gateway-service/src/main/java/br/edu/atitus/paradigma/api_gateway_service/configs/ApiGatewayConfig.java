@@ -9,15 +9,30 @@ import org.springframework.context.annotation.Configuration;
 public class ApiGatewayConfig {
 
 	@Bean
-	RouteLocator getGatewayRouter(RouteLocatorBuilder builder) {
+	RouteLocator getRoutes(RouteLocatorBuilder builder){
 		return builder.routes()
-				.route(route -> route
+				.route(rota -> rota
+						.path("/get")
+						.filters(f -> f
+								.addRequestHeader("Usuario", "Pessoa")
+								.addRequestParameter("Parametro", "ValorParametro")
+								.addResponseHeader("Servidor", "meuServer"))
+						.uri("http://httpbin.org"))
+				.route(rota -> rota
 						.path("/cambio-service/**")
+						.filters(f -> f
+								.addRequestHeader("Usuario", "Gabriela Lenz"))
 						.uri("lb://cambio-service"))
-				.route(route -> route
+				.route(rota -> rota
 						.path("/produto-service/**")
-						.uri("lb://produto-service"))				
+						.filters(f -> f
+								.addRequestHeader("Usuario", "Gabriela Lenz"))
+						.uri("lb://produto-service"))
+				.route(rota -> rota
+						.path("/saudacao-service/**")
+						.filters(f -> f
+								.addRequestHeader("Usuario", "Gabriela Lenz"))
+						.uri("lb://saudacao-service"))
 				.build();
 	}
-	
 }
